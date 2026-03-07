@@ -272,7 +272,7 @@ IgnoreEntryQueueErr = function(_)
 
 	,//1
 		PUSH(0x30)          //push 30h ; '0'
-	+	PUSH(POS3WC)        //push offset "Load Failed"
+	+	PUSH(POS4WC)        //push offset "Load Failed"
 	+	PUSH(this.BexAddr)  //push offset "Data\Table\EntryQueue.bex"
 
 	,//2
@@ -287,6 +287,18 @@ IgnoreEntryQueueErr = function(_)
 	];
 
 	let addr = Exe.FindHex(parts);
+	if (addr < 0)
+	{
+		parts[0] =
+			PUSH(this.BexAddr)  //push offset "Data\Table\EntryQueue.bex"
+		+	CALL([POS3WC])      //call dword ptr [&CreateFileA]
+		+	MOV(R32, EAX)       //mov regA, eax
+		+	" ?? ?? ??"         //optional extra store (e.g. mov [ebp+disp8], regA)
+		+	CMP(R32, -1)        //cmp regA, -1
+		+	JNZ(WCp)            //jne short _skip
+		;
+		addr = Exe.FindHex(parts);
+	}
 	if (addr < 0)
 		throw Error("Pattern not found");
 

@@ -48,6 +48,7 @@
 - RemovePremiumService
 - AllowSkillSpam
 - CustomBarterZenySep
+- IgnoreEntryQueueErr
 
 
 # 2024-08-07 Changes

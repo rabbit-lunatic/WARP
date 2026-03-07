@@ -461,7 +461,7 @@ IgnoreErrors:
         - IgnoreEntryQueueErr:
             title : Ignore Entry Queue errors
             recommend : no
-            author : X-EcutiOnner
+            author : X-EcutiOnner , Skylove
             desc : Prevents the client from displaying error messages related to Entry Queue. Messages are sent to debugger instead. This does not guarantee the client will work in-spite of the errors.
 
 MessageBox:
