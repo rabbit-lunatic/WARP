@@ -44,9 +44,10 @@
 - FixSkillbarReset
 - AllianceChatHotkeySelector
 - CustomEncKeys
-- IncreaseLightmapQuality
 - DisableIndoorRSW
 - RemovePremiumService
+- AllowSkillSpam
+- CustomBarterZenySep
 
 
 # 2024-08-07 Changes

@@ -78,7 +78,7 @@ CustomChar:
         - AllowSkillSpam:
             title : Allow spam skills by hotkey
             recommend : no
-            author : Neo-Mind, Functor , Andrei Karas (4144)
+            author : Neo-Mind, Functor , Andrei Karas (4144) , Victor Hugo
             desc : Allow spamming of skills by continuous press of hotkey.
         
         - AllowGuildInClan:

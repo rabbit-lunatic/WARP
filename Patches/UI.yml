@@ -307,6 +307,12 @@ CustomUI:
             author : Skylove
             desc: "Replaces the hard-coded Gold PC point cap of 300 with a user-defined value (up to 99,999). Requires matching server-side change in rAthena (battle.cpp)."
 
+        - CustomBarterZenySep:
+            title : Format Barter Zeny with Commas
+            recommend : no
+            author : Victor Hugo
+            desc : Adds thousand separators (commas) to the Zeny display in the Barter window for better readability (e.g., 1,000,000 z).
+
 CaseInsensitiveSearch:
     title: CASE INSENSITIVE SEARCH
     mutex: false
