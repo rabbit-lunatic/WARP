@@ -49,6 +49,7 @@
 - AllowSkillSpam
 - CustomBarterZenySep
 - IgnoreEntryQueueErr
+- FixSelectMenuHeightExpansion
 
 
 # 2024-08-07 Changes

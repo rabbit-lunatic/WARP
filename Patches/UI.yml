@@ -295,6 +295,13 @@ CustomUI:
             recommend : no
             author : Victor Hugo
             desc: "Prevents the NPC dialogue select menu from expanding too wide when the text contains '^RRGGBB' color tags by correcting the length calculation."
+
+        - FixSelectMenuHeightExpansion:
+            title : Restore Old NPC Select Menu Behavior
+            recommend : no
+            author : Victor Hugo
+            desc: "Restores the old NPC select menu behavior. When the number of options exceeds the visible limit, a scrollbar will appear instead of expanding the dialogue window height."
+
         - FixSkillbarReset:
             title : Fix loading shortcuts / skill bar state
             recommend : yes
