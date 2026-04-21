@@ -1801,3 +1801,11 @@
   find : <B1 E2 B4 C9 20 BE C7 BF EB 20 BD C3 20 C1 A6 C0 E7 B8 A6 20 B9 DE C0 BB 20 BC F6 20 C0 D6 BD C0 B4 CF B4 D9 2E>
   replace : "You can get punished if you abuse it."
   startDate : 20231115
+
+-
+  ##################################
+  desc : Rune Tablet - Rune List
+  ##################################
+  find : <25 73 C0 C7 20 B7 E9 20 C1 B6 B0 A2>
+  replace : "Rune of %s"
+  startDate : 20230802

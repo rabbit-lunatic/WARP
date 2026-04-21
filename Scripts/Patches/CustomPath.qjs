@@ -146,24 +146,33 @@ CustomPath = function(_)
 		dest = EAX;
 	}
 
+	const isRuneSystem = (_ === 'CustomRuneSystemIdLub' ||
+	                       _ === 'CustomitemDecomLub'   ||
+	                       _ === 'CustomRuneInfoLub');
+
 	{
 		const hasSite = (addr >= 0) || !!refAddrs;
-		if (!hasSite && !isQuestQuali)
+		if (!hasSite && !isQuestQuali && !isRuneSystem && _ !== 'CustomRuneSystemTableLub')
 			throw Error(`'${name} not used`);
 	}
 
 	const suf = strType === "Prefix" ? "without .lub" : "";
+	const defaultName = _ === 'CustomRuneSystemInfoLub' ? name + '.lub' : name;
 	const newStr = Exe.GetUserInput(
 		varName, D_Text, `File ${strType}`,
 		`Enter the new <b>${prefix} ${strType}</b> (relative to RO folder) ${suf}`,
-		name, {minLen: 1, maxLen: 64}
+		defaultName,
+		isRuneSystem ? {minLen: 1, maxLen: name.length} : {minLen: 1, maxLen: 64}
 	);
 	if (newStr === false)
 		Cancel(strType, name);
 
+	if (isRuneSystem && newStr.length < name.length)
+		throw Error(`Path must be exactly ${name.length} characters (current: ${newStr.length})`);
+
 	const [, freeVir] = Exe.AddFromVar(varName);
 
-	if (refAddrs == undefined)
+	if (refAddrs == undefined && !isRuneSystem)
 	{
 		Exe.SetUint32(addr + 1, freeVir);
 	}
@@ -204,13 +213,47 @@ CustomPath = function(_)
 		AutoHook(cutFrom, code, { targets: { 1: Exe.Phy2Vir(cutTo, CODE) } });
 	}
 
+	if (isRuneSystem)
+	{
+		const movupsPat = [0x0F, 0x10, 0x05,
+			nameAddr & 0xFF, (nameAddr >> 8) & 0xFF,
+			(nameAddr >> 16) & 0xFF, (nameAddr >> 24) & 0xFF];
+		const aMovups = Exe.FindHex(movupsPat.map(b => b.toString(16).padStart(2,'0')).join(' '));
+
+		if (aMovups > 0)
+		{
+			Exe.SetUint32(aMovups + 0x03, freeVir);
+			Exe.SetUint32(aMovups + 0x1C, freeVir + 0x10);
+			Exe.SetUint32(aMovups + 0x27, freeVir + 0x18);
+		}
+
+		if (addr > 0)
+			Exe.SetUint32(addr + 1, freeVir);
+	}
+
+	else if (_ === 'CustomRuneSystemTableLub')
+	{
+		const movupsPat = [0x0F, 0x10, 0x05,
+			nameAddr & 0xFF, (nameAddr >> 8) & 0xFF,
+			(nameAddr >> 16) & 0xFF, (nameAddr >> 24) & 0xFF];
+		const aMovups = Exe.FindHex(movupsPat.map(b => b.toString(16).padStart(2,'0')).join(' '));
+
+		if (aMovups > 0)
+		{
+			Exe.SetUint32(aMovups + 0x03, freeVir);          // MOVUPS1 operand
+			Exe.SetUint32(aMovups + 0x1B, freeVir + 0x10);  // MOVUPS2 operand
+		}
+
+		if (addr > 0)
+			Exe.SetUint32(addr + 1, freeVir);
+	}
+
 	else if (Array.isArray(refAddrs) && refAddrs[0] === 'HOOK_SPOPUP_TAIL')
 	{
 		const cutFrom  = refAddrs[1];
 		const cutTo    = refAddrs[2];
 		const midAddr  = refAddrs[3];
 
-		// detect disp8 vs disp32 and read EBP offsets from original MOV instructions
 		const isDisp8_1 = (Exe.GetUint8(midAddr + 1) === 0x45);
 		const ebpOff1   = isDisp8_1 ? Exe.GetInt8(midAddr + 2) : Exe.GetInt32(midAddr + 2);
 		const mov2Start = midAddr + (isDisp8_1 ? 7 : 10);
@@ -241,6 +284,27 @@ CustomPath = function(_)
 
 		Exe.SetNOPs(cutFrom, cutTo - cutFrom);
 		AutoHook(cutFrom, code, { targets: { 1: Exe.Phy2Vir(cutTo, CODE) } });
+	}
+
+	if (_ === 'CustomRuneDescLub'    ||
+	    _ === 'CustomRuneSetDescLub' ||
+	    _ === 'CustomRuneSetInfoLub' ||
+	    _ === 'CustomRuneRewardLub'  ||
+	    _ === 'CustomRuneSystemInfoLub')
+	{
+		const addrs = Exe.FindHexN(PUSH(nameAddr));
+		for (const a of addrs)
+		{
+			Exe.SetUint32(a + 1, freeVir);
+			for (let i = 2; i <= 30; i++)
+			{
+				if (Exe.GetUint8(a - i) === 0x6A && Exe.GetUint8(a - i + 1) === name.length)
+				{
+					Exe.SetUint8(a - i + 1, newStr.length);
+					break;
+				}
+			}
+		}
 	}
 
 	return true;
